@@ -1,22 +1,29 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 namespace Game
 {
     public class GameZone : MonoBehaviour
     {
-        Tilemap boardTilemap;
-        Tilemap overlayTilemap;
+        public Button scrambleButton;
+        public Text diceResult;
+        public Tilemap boardTilemap;
+        public Tilemap overlayTilemap;
+        public Tilemap playerTilemap;
+        public Player player;
+
         PathFinder pathFinder;
-        List<Vector3Int> reachableCells;
+
         bool mousePressed = false;
+        List<Vector3Int> reachableCells = new List<Vector3Int>();
 
         // Start is called before the first frame update
         void Start()
         {
-            SetupTiles();
             pathFinder = new PathFinder(boardTilemap);
+            SetupUI();
         }
 
         // Update is called once per frame
@@ -24,31 +31,14 @@ namespace Game
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Vector3Int cellCoords = GetCellUnderMouse();
-                if (pathFinder.IsCellWalkable(cellCoords))
+                Vector3Int selectedCell = GetCellUnderMouse();
+                if (reachableCells.Contains(selectedCell))
                 {
-                    mousePressed = true;
-                    reachableCells = pathFinder.GetReachableCells(cellCoords, 4);
-                    foreach (Vector3Int cell in reachableCells)
-                    {
-                        overlayTilemap.SetTile(cell, Tiles.GREEN);
-                    }
+                    player.MoveTo(selectedCell);
+                    reachableCells.Clear();
+                    RefreshReachableCells();
                 }
             }
-
-            if (Input.GetMouseButtonUp(0))
-            {
-                if (mousePressed)
-                {
-                    mousePressed = false;
-                    foreach (Vector3Int cell in reachableCells)
-                    {
-                        overlayTilemap.SetTile(cell, null);
-                    }
-
-                }
-            }
-            return;
         }
 
         private Vector3Int GetCellUnderMouse()
@@ -59,20 +49,34 @@ namespace Game
             return cellCoords;
         }
 
-        private void SetupTiles()
+        private void SetupUI()
         {
-            Tilemap[] tilemaps = GetComponentsInChildren<Tilemap>();
-            foreach (Tilemap tilemap in tilemaps)
-            {
-                if (tilemap.gameObject.name == "BoardTilemap")
-                {
-                    boardTilemap = tilemap;
-                }
+            Button scrambleButton = this.scrambleButton.GetComponent<Button>();
+            scrambleButton.onClick.AddListener(ScrambleClicked);
 
-                if (tilemap.gameObject.name == "OverlayTilemap")
-                {
-                    overlayTilemap = tilemap;
-                }
+            Text diceResult = this.diceResult.GetComponent<Text>();
+            diceResult.text = "";
+        }
+
+        private void ScrambleClicked()
+        {
+            int dice1 = Random.Range(1, 6);
+            int dice2 = Random.Range(1, 6);
+            int distance = dice1 + dice2;
+            diceResult.GetComponent<Text>().text = distance.ToString();
+            reachableCells = pathFinder.GetReachableCells(player.GetPosition(), distance);
+            RefreshReachableCells();
+        }
+
+        private void RefreshReachableCells()
+        {
+            foreach (Vector3Int cell in overlayTilemap.cellBounds.allPositionsWithin)
+            {
+                overlayTilemap.SetTile(cell, null);
+            }
+            foreach (Vector3Int cell in reachableCells)
+            {
+                overlayTilemap.SetTile(cell, Tiles.GREEN);
             }
         }
     }

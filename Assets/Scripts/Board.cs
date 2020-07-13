@@ -10,7 +10,7 @@ public class Board : MonoBehaviour
     public Tilemap boardTilemap;
     public Tilemap overlayTilemap;
     public TextAsset level;
-    public TileManager tileManager;
+    public TileProvider tileManager;
 
     // Start is called before the first frame update
     void Start()

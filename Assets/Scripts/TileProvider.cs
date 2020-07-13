@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class TileManager : MonoBehaviour
+public class TileProvider : MonoBehaviour
 {
     public TextAsset tilesConfig;
     private Dictionary<string, Tile> tiles;

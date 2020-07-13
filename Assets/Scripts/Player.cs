@@ -1,35 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[Serializable]
 public class Player
 {
     public string id;
     public string tileName;
 
-    public Tilemap playerTilemap;
-    public Tile playerTile;
-    private Vector3Int position;
+    private Tilemap playerTilemap;
+    private Tile playerTile;
+    private PathFinder pathFinder;
+
+    public Vector3Int Position { get; private set; }
+
+    public List<Vector3Int> ReachableCells { get; private set; }
 
     public Player(Tilemap playerTilemap, Tile playerTile, Vector3Int startPosition)
     {
         this.playerTilemap = playerTilemap;
         this.playerTile = playerTile;
-        position = startPosition;
-        playerTilemap.SetTile(position, playerTile);
-    }
-
-    public Vector3Int GetPosition()
-    {
-        return position;
+        Position = startPosition;
+        pathFinder = GameObject.Find("PathFinder").GetComponent<PathFinder>();
+        playerTilemap.SetTile(Position, playerTile);
     }
 
     public void MoveTo(Vector3Int cell)
     {
-        playerTilemap.SetTile(position, null);
-        position = cell;
-        playerTilemap.SetTile(position, playerTile);
+        playerTilemap.SetTile(Position, null);
+        Position = cell;
+        playerTilemap.SetTile(Position, playerTile);
     }
 
+    public void SetWalkableDistance(int distance)
+    {
+        ReachableCells = pathFinder.GetReachableCells(Position, distance);
+    }
 }

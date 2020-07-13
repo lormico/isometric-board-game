@@ -12,16 +12,13 @@ namespace Game
         public Tilemap boardTilemap;
         public Tilemap overlayTilemap;
         public PlayerManager playerManager;
-        public TileManager tileManager;
 
         PathFinder pathFinder;
-
         List<Vector3Int> reachableCells = new List<Vector3Int>();
 
         // Start is called before the first frame update
         void Start()
         {
-            pathFinder = new PathFinder(boardTilemap);
             SetupUI();
         }
 
@@ -30,22 +27,9 @@ namespace Game
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Vector3Int selectedCell = GetCellUnderMouse();
-                if (reachableCells.Contains(selectedCell) && playerManager.CanMoveTo(selectedCell))
-                {
-                    playerManager.GetPlayer(0).MoveTo(selectedCell);
-                    reachableCells.Clear();
-                    RefreshReachableCells();
-                }
-            }
-        }
+                return;
 
-        private Vector3Int GetCellUnderMouse()
-        {
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int cellCoords = boardTilemap.WorldToCell(mousePosition);
-            cellCoords.z = 0;
-            return cellCoords;
+            }
         }
 
         private void SetupUI()
@@ -59,25 +43,12 @@ namespace Game
 
         private void ScrambleClicked()
         {
-            int dice1 = Random.Range(1, 6);
-            int dice2 = Random.Range(1, 6);
+            int dice1 = Random.Range(1, 7);
+            int dice2 = Random.Range(1, 7);
             int distance = dice1 + dice2;
             diceResult.GetComponent<Text>().text = distance.ToString();
-            reachableCells = pathFinder.GetReachableCells(playerManager.GetPlayer(0).GetPosition(), distance);
-            RefreshReachableCells();
-        }
-
-        // Move this
-        private void RefreshReachableCells()
-        {
-            foreach (Vector3Int cell in overlayTilemap.cellBounds.allPositionsWithin)
-            {
-                overlayTilemap.SetTile(cell, null);
-            }
-            foreach (Vector3Int cell in reachableCells)
-            {
-                overlayTilemap.SetTile(cell, tileManager.Get("reachable"));
-            }
+            playerManager.SetWalkableDistance(distance);
+            playerManager.Mode = "moving";
         }
     }
 }

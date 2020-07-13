@@ -1,17 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Player : MonoBehaviour
+[Serializable]
+public class Player
 {
-    public Tile playerTile;
+    public string id;
+    public string tileName;
+
     public Tilemap playerTilemap;
+    public Tile playerTile;
     private Vector3Int position;
 
-    void Start()
+    public Player(Tilemap playerTilemap, Tile playerTile, Vector3Int startPosition)
     {
-        position = new Vector3Int(0, 0, 0);
+        this.playerTilemap = playerTilemap;
+        this.playerTile = playerTile;
+        position = startPosition;
         playerTilemap.SetTile(position, playerTile);
     }
 

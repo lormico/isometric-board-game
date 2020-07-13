@@ -1,0 +1,16 @@
+{
+	"Contents": [
+		{
+			"type": "hallway",
+			"tile": "Vanilla/peach"
+		},
+		{
+			"type": "room",
+			"tile": "Vanilla/cerulean"
+		},
+		{
+			"type": "reachable",
+			"tile": "Vanilla/green"
+		}
+	]
+}

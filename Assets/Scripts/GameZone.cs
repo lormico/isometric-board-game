@@ -11,12 +11,11 @@ namespace Game
         public Text diceResult;
         public Tilemap boardTilemap;
         public Tilemap overlayTilemap;
-        public Tilemap playerTilemap;
-        public Player player;
+        public PlayerManager playerManager;
+        public TileManager tileManager;
 
         PathFinder pathFinder;
 
-        bool mousePressed = false;
         List<Vector3Int> reachableCells = new List<Vector3Int>();
 
         // Start is called before the first frame update
@@ -32,9 +31,9 @@ namespace Game
             if (Input.GetMouseButtonDown(0))
             {
                 Vector3Int selectedCell = GetCellUnderMouse();
-                if (reachableCells.Contains(selectedCell))
+                if (reachableCells.Contains(selectedCell) && playerManager.CanMoveTo(selectedCell))
                 {
-                    player.MoveTo(selectedCell);
+                    playerManager.GetPlayer(0).MoveTo(selectedCell);
                     reachableCells.Clear();
                     RefreshReachableCells();
                 }
@@ -64,10 +63,11 @@ namespace Game
             int dice2 = Random.Range(1, 6);
             int distance = dice1 + dice2;
             diceResult.GetComponent<Text>().text = distance.ToString();
-            reachableCells = pathFinder.GetReachableCells(player.GetPosition(), distance);
+            reachableCells = pathFinder.GetReachableCells(playerManager.GetPlayer(0).GetPosition(), distance);
             RefreshReachableCells();
         }
 
+        // Move this
         private void RefreshReachableCells()
         {
             foreach (Vector3Int cell in overlayTilemap.cellBounds.allPositionsWithin)
@@ -76,7 +76,7 @@ namespace Game
             }
             foreach (Vector3Int cell in reachableCells)
             {
-                overlayTilemap.SetTile(cell, Tiles.GREEN);
+                overlayTilemap.SetTile(cell, tileManager.Get("reachable"));
             }
         }
     }

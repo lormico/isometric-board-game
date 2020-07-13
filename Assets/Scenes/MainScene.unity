@@ -392,8 +392,9 @@ GameObject:
   m_Component:
   - component: {fileID: 389566298}
   - component: {fileID: 389566299}
+  - component: {fileID: 389566300}
   m_Layer: 0
-  m_Name: IsometricGrid
+  m_Name: Board
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -428,6 +429,21 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 2
   m_CellSwizzle: 0
+--- !u!114 &389566300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389566297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2417eb1ffb96aa4ca2adce15c118b4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardTilemap: {fileID: 2146356706}
+  overlayTilemap: {fileID: 102407359}
+  level: {fileID: 4900000, guid: f07ecee9bd9496d40b70d6c7e697338d, type: 3}
 --- !u!1 &502395951
 GameObject:
   m_ObjectHideFlags: 0
@@ -588,6 +604,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &630101165
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 630101167}
+  - component: {fileID: 630101166}
+  m_Layer: 0
+  m_Name: PlayerManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &630101166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630101165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65864199e32039d45afe0e8c7fb6e946, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTilemap: {fileID: 2063388215}
+  playersConfig: {fileID: 4900000, guid: 94b9cbe80e96aca4d87d49afb0c89979, type: 3}
+--- !u!4 &630101167
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630101165}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.024465607, y: -0.1294605, z: -61.250977}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &736523019
 GameObject:
@@ -756,8 +817,7 @@ MonoBehaviour:
   diceResult: {fileID: 53044607}
   boardTilemap: {fileID: 2146356706}
   overlayTilemap: {fileID: 102407359}
-  playerTilemap: {fileID: 2063388215}
-  player: {fileID: 2000779030}
+  playerManager: {fileID: 630101166}
 --- !u!1 &1061236585
 GameObject:
   m_ObjectHideFlags: 0
@@ -858,7 +918,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &2000779028
+--- !u!1 &1099115007
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -866,43 +926,28 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2000779029}
-  - component: {fileID: 2000779030}
+  - component: {fileID: 1099115008}
   m_Layer: 0
-  m_Name: Player
+  m_Name: TileManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2000779029
+--- !u!4 &1099115008
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2000779028}
+  m_GameObject: {fileID: 1099115007}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 93, y: 343.5, z: 0}
+  m_LocalPosition: {x: -0.024465607, y: -0.1294605, z: -61.250977}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2000779030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2000779028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: deb9a8dd126c9c749a757ce2cd240dc9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerTile: {fileID: 11400000, guid: f7a15a82fbf3c3c47b939be82ed037a9, type: 2}
-  playerTilemap: {fileID: 2063388215}
 --- !u!1 &2063388214
 GameObject:
   m_ObjectHideFlags: 0
@@ -1003,7 +1048,7 @@ TilemapRenderer:
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
   m_SortOrder: 0
-  m_Mode: 0
+  m_Mode: 1
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
 --- !u!4 &2063388217

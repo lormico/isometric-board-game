@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -8,9 +7,9 @@ public class Player
     public string id;
     public string tileName;
 
-    private Tilemap playerTilemap;
-    private Tile playerTile;
-    private PathFinder pathFinder;
+    private readonly Tilemap playerTilemap;
+    private readonly Tile playerTile;
+    private readonly PathFinder pathFinder;
 
     public Vector3Int Position { get; private set; }
 

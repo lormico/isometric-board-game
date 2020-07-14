@@ -1,5 +1,4 @@
-﻿using Game;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -10,6 +9,7 @@ public class PlayerManager : MonoBehaviour
     public Tilemap playerTilemap;
     public TileProvider tileProvider;
     public TextAsset playersConfig;
+
     private List<Player> players;
     private Player currentPlayer;
 

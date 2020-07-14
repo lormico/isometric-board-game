@@ -6,16 +6,6 @@ public class PathFinder : MonoBehaviour
 {
     public Tilemap boardTilemap;
 
-    private void Start()
-    {
-        
-    }
-
-    private void Update()
-    {
-        
-    }
-
     public List<Vector3Int> GetReachableCells(Vector3Int center, int distance)
     {
         Stack<Vector3Int> frontier = new Stack<Vector3Int>();

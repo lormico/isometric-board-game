@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Tilemaps;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Game
@@ -9,12 +7,7 @@ namespace Game
     {
         public Button scrambleButton;
         public Text diceResult;
-        public Tilemap boardTilemap;
-        public Tilemap overlayTilemap;
         public PlayerManager playerManager;
-
-        PathFinder pathFinder;
-        List<Vector3Int> reachableCells = new List<Vector3Int>();
 
         // Start is called before the first frame update
         void Start()

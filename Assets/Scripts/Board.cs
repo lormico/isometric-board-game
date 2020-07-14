@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEngine.UIElements.Experimental;
 
 public class Board : MonoBehaviour
 {
@@ -16,12 +12,6 @@ public class Board : MonoBehaviour
     void Start()
     {
         LoadBoard();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     private void LoadBoard()

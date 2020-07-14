@@ -444,7 +444,7 @@ MonoBehaviour:
   boardTilemap: {fileID: 2146356706}
   overlayTilemap: {fileID: 102407359}
   level: {fileID: 4900000, guid: f07ecee9bd9496d40b70d6c7e697338d, type: 3}
-  tileManager: {fileID: 1099115009}
+  tileProvider: {fileID: 1099115009}
 --- !u!1 &502395951
 GameObject:
   m_ObjectHideFlags: 0

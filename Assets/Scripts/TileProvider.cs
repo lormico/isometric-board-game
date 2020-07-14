@@ -8,14 +8,13 @@ public class TileProvider : MonoBehaviour
     public TextAsset tilesConfig;
     private Dictionary<string, Tile> tiles;
 
-    void Start()
+    private void Awake()
     {
-        LoadTiles();
-    }
-
-    void Update()
-    {
-        
+        // Is this necessary? How many times should I expect Awake to be called?
+        if (tiles == null)
+        {
+            LoadTiles();
+        }
     }
 
     private void LoadTiles()

@@ -10,7 +10,7 @@ public class Board : MonoBehaviour
     public Tilemap boardTilemap;
     public Tilemap overlayTilemap;
     public TextAsset level;
-    public TileProvider tileManager;
+    public TileProvider tileProvider;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +31,7 @@ public class Board : MonoBehaviour
             string[] values = row.Split(',');
             boardTilemap.SetTile(
                 new Vector3Int(int.Parse(values[0]), int.Parse(values[1]), 0),
-                tileManager.Get(values[2])
+                tileProvider.Get(values[2])
                 );
         }
     }

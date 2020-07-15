@@ -1,4 +1,5 @@
 ﻿using Mono.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
@@ -183,6 +184,17 @@ public class Level : MonoBehaviour
 
     }
 
+    public bool HasObstacle(Vector2Int origin, Vector2Int destination)
+    {
+        int originTileId = GetTile(origin).Id;
+        int destinationTileId = GetTile(destination).Id;
+        if (Obstacles.Contains(new Connection(originTileId, destinationTileId)))
+        {
+            return true;
+        }
+        return false;
+    }
+
     public class Room
     {
         public string Name { get; private set; }
@@ -193,15 +205,20 @@ public class Level : MonoBehaviour
         }
     }
 
-    public class Connection
+    public class Connection : IEquatable<Connection>
     {
         public int Origin { get; private set; }
         public int Destination { get; private set; }
 
-        public Connection(int origin, int destination)
+        public Connection(int originId, int destinationId)
         {
-            Origin = origin;
-            Destination = destination;
+            Origin = originId;
+            Destination = destinationId;
+        }
+
+        public bool Equals(Connection other)
+        {
+            return this.Origin == other.Origin && this.Destination == other.Destination;
         }
     }
 

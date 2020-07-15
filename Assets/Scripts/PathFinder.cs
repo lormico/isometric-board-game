@@ -51,7 +51,7 @@ public class PathFinder : MonoBehaviour
         foreach (Vector2Int movement in movements)
         {
             Vector3Int neighboringCell = new Vector3Int(center.x + movement.x, center.y + movement.y, 0);
-            if (IsCellWalkable(neighboringCell))
+            if (IsCellWalkable(neighboringCell) && IsPathAllowed(center, neighboringCell))
             {
                 neighboringCells.Add(neighboringCell);
             }
@@ -60,8 +60,13 @@ public class PathFinder : MonoBehaviour
         return neighboringCells;
     }
 
-    public bool IsCellWalkable(Vector3Int cell)
+    private bool IsCellWalkable(Vector3Int cell)
     {
         return level.GetTile((Vector2Int)cell) != null;
+    }
+
+    private bool IsPathAllowed(Vector3Int origin, Vector3Int destination)
+    {
+        return !level.HasObstacle((Vector2Int)origin, (Vector2Int)destination);
     }
 }

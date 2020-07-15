@@ -9,13 +9,16 @@ public class Level : MonoBehaviour
     public string Name { get; private set; }
     public string Pack { get; private set; }
     public IList<Room> Rooms { get; private set; }
-    public IDictionary<int, Tile> Tiles { get; private set; }
+    public IList<Tile> Tiles { get; private set; }
     public IList<Connection> Obstacles { get; private set; }
     public IList<Character> Characters { get; private set; }
     public IList<Weapon> Weapons { get; private set; }
     public IList<Connection> Shortcuts { get; private set; }
 
-    private void Awake()
+    private IDictionary<int, int> TileIdIndex;
+    private IDictionary<Vector2Int, int> TilePositionIndex;
+
+    private void Start()
     {
         string connection = "URI=file:" + Application.dataPath + "/Levels/" + settings.Level;
         IDbConnection dbcon = new SqliteConnection(connection);
@@ -33,6 +36,8 @@ public class Level : MonoBehaviour
         Shortcuts = GetShortcuts(dbcon);
 
         dbcon.Close();
+
+        CreateTileIndices();
     }
 
     private static IDictionary<string, string> GetLevelMetadata(IDbConnection dbcon)
@@ -65,18 +70,17 @@ public class Level : MonoBehaviour
         return rooms;
     }
 
-    private static IDictionary<int, Tile> GetTiles(IDbConnection dbcon)
+    private static IList<Tile> GetTiles(IDbConnection dbcon)
     {
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
         cmnd_read.CommandText = "SELECT tile_id, x, y, room, tile FROM board_tiles";
         reader = cmnd_read.ExecuteReader();
-        IDictionary<int, Tile> tiles = new Dictionary<int, Tile>();
+        IList<Tile> tiles = new List<Tile>();
         while (reader.Read())
         {
-            int tile_id = reader.GetInt32(reader.GetOrdinal("tile_id"));
-            tiles.Add(tile_id, new Tile(
-                tile_id,
+            tiles.Add(new Tile(
+                reader.GetInt32(reader.GetOrdinal("tile_id")),
                 reader.GetInt32(reader.GetOrdinal("x")),
                 reader.GetInt32(reader.GetOrdinal("y")),
                 reader.GetString(reader.GetOrdinal("room")),
@@ -150,10 +154,33 @@ public class Level : MonoBehaviour
         return shortcuts;
     }
 
-    public Vector3Int GetCellFromId(int id)
+    private void CreateTileIndices()
     {
-        Tile tile = Tiles[id];
-        return new Vector3Int(tile.x, tile.y, 0);
+        TileIdIndex = new Dictionary<int, int>();
+        TilePositionIndex = new Dictionary<Vector2Int, int>();
+        foreach (Tile tile in Tiles)
+        {
+            TileIdIndex.Add(tile.Id, Tiles.IndexOf(tile));
+            TilePositionIndex.Add(tile.Position, Tiles.IndexOf(tile));
+        }
+    }
+
+    public Tile GetTile(int id)
+    {
+        if (!TileIdIndex.ContainsKey(id))
+        {
+            return null;
+        }
+        return Tiles[TileIdIndex[id]];
+    }
+
+    public Tile GetTile(Vector2Int position)
+    {
+        if (!TilePositionIndex.ContainsKey(position)) {
+            return null;
+        }
+        return Tiles[TilePositionIndex[position]];
+
     }
 
     public class Room
@@ -203,16 +230,14 @@ public class Level : MonoBehaviour
     public class Tile
     {
         public int Id { get; private set; }
-        public int x { get; private set; }
-        public int y { get; private set; }
+        public Vector2Int Position { get; private set; }
         public string RoomName { get; private set; }
         public string TileName { get; private set; }
 
         public Tile(int id, int x, int y, string roomName, string tileName)
         {
             Id = id;
-            this.x = x;
-            this.y = y;
+            Position = new Vector2Int(x, y);
             RoomName = roomName;
             TileName = tileName;
         }

@@ -15,10 +15,10 @@ public class Board : MonoBehaviour
 
     private void LoadBoard()
     {
-        foreach (Level.Tile tile in level.Tiles.Values)
+        foreach (Level.Tile tile in level.Tiles)
         {
             boardTilemap.SetTile(
-                new Vector3Int(tile.x, tile.y, 0),
+                (Vector3Int)tile.Position,
                 tileProvider.GetBoardTile(level.Pack, tile.RoomName, tile.TileName)
             );
         }

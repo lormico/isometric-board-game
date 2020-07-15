@@ -4,7 +4,7 @@ using UnityEngine.Tilemaps;
 
 public class PathFinder : MonoBehaviour
 {
-    public Tilemap boardTilemap;
+    public Level level;
 
     public List<Vector3Int> GetReachableCells(Vector3Int center, int distance)
     {
@@ -62,6 +62,6 @@ public class PathFinder : MonoBehaviour
 
     public bool IsCellWalkable(Vector3Int cell)
     {
-        return boardTilemap.GetTile(cell) != null;
+        return level.GetTile((Vector2Int)cell) != null;
     }
 }

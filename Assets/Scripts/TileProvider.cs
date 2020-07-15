@@ -7,9 +7,9 @@ public class TileProvider : MonoBehaviour
     public Settings settings;
     private IDictionary<string, TilePack> packs;
 
-    private void Awake()
+    private void Start()
     {
-        // Is this necessary? How many times should I expect Awake to be called?
+        // Is this necessary? How many times should I expect Start to be called?
         if (packs == null || packs.Count == 0)
         {
             LoadPacks();

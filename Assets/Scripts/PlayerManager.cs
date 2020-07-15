@@ -92,7 +92,7 @@ public class PlayerManager : MonoBehaviour
             players.Add(new Player(
                 playerTilemap,
                 tileProvider.GetPlayerTile(level.Pack, character.Tile),
-                level.GetCellFromId(character.StartTileId)));
+                (Vector3Int)level.GetTile(character.StartTileId).Position));
         }
     }
 

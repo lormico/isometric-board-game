@@ -1,0 +1,15 @@
+{
+	"Level": "Example.db",
+	"Players": [
+		{
+			"id": 0,
+			"characterId": 0
+		}
+	],
+	"Packs": [
+		{
+			"name": "Vanilla",
+			"folder": "Vanilla"
+		}
+	]
+}

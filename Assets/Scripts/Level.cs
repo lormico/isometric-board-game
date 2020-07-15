@@ -1,9 +1,11 @@
 ﻿using Mono.Data.Sqlite;
 using System.Collections.Generic;
 using System.Data;
+using UnityEngine;
 
-public class Level
+public class Level : MonoBehaviour
 {
+    public Settings settings;
     public string Name { get; private set; }
     public string Pack { get; private set; }
     public IList<Room> Rooms { get; private set; }
@@ -13,28 +15,24 @@ public class Level
     public IList<Weapon> Weapons { get; private set; }
     public IList<Connection> Shortcuts { get; private set; }
 
-    public static Level FromFile(string filePath)
+    private void Awake()
     {
-        Level instance = new Level();
-
-        string connection = "URI=file:" + filePath;
+        string connection = "URI=file:" + Application.dataPath + "/Levels/" + settings.Level;
         IDbConnection dbcon = new SqliteConnection(connection);
         dbcon.Open();
 
         IDictionary<string, string> levelMetadata = GetLevelMetadata(dbcon);
-        instance.Pack = levelMetadata["pack"];
-        instance.Name = levelMetadata["level_name"];
+        Pack = levelMetadata["pack"];
+        Name = levelMetadata["level_name"];
 
-        instance.Rooms = GetRooms(dbcon);
-        instance.Tiles = GetTiles(dbcon);
-        instance.Obstacles = GetObstacles(dbcon);
-        instance.Characters = GetCharacters(dbcon);
-        instance.Weapons = GetWeapons(dbcon);
-        instance.Shortcuts = GetShortcuts(dbcon);
+        Rooms = GetRooms(dbcon);
+        Tiles = GetTiles(dbcon);
+        Obstacles = GetObstacles(dbcon);
+        Characters = GetCharacters(dbcon);
+        Weapons = GetWeapons(dbcon);
+        Shortcuts = GetShortcuts(dbcon);
 
         dbcon.Close();
-
-        return instance;
     }
 
     private static IDictionary<string, string> GetLevelMetadata(IDbConnection dbcon)
@@ -62,7 +60,6 @@ public class Level
         while (reader.Read())
         {
             rooms.Add(new Room(reader.GetString(reader.GetOrdinal("name"))));
-
         }
 
         return rooms;
@@ -110,7 +107,20 @@ public class Level
 
     private static IList<Character> GetCharacters(IDbConnection dbcon)
     {
+        IDbCommand cmnd_read = dbcon.CreateCommand();
+        IDataReader reader;
+        cmnd_read.CommandText = "SELECT id, name, tile, start_tile_id FROM characters";
+        reader = cmnd_read.ExecuteReader();
         IList<Character> characters = new List<Character>();
+        while (reader.Read())
+        {
+            characters.Add(new Character(
+                reader.GetInt32(reader.GetOrdinal("id")),
+                reader.GetString(reader.GetOrdinal("name")),
+                reader.GetString(reader.GetOrdinal("tile")),
+                reader.GetInt32(reader.GetOrdinal("start_tile_id"))
+            ));
+        }
 
         return characters;
     }
@@ -140,6 +150,12 @@ public class Level
         return shortcuts;
     }
 
+    public Vector3Int GetCellFromId(int id)
+    {
+        Tile tile = Tiles[id];
+        return new Vector3Int(tile.x, tile.y, 0);
+    }
+
     public class Room
     {
         public string Name { get; private set; }
@@ -164,9 +180,18 @@ public class Level
 
     public class Character
     {
-        public int Id;
-        public string Name;
-        public string Tile;
+        public int Id { get; private set; }
+        public string Name { get; private set; }
+        public string Tile { get; private set; }
+        public int StartTileId { get; private set; }
+
+        public Character(int id, string name, string tile, int startTileId)
+        {
+            Id = id;
+            Name = name;
+            Tile = tile;
+            StartTileId = startTileId;
+        }
     }
 
     public class Weapon

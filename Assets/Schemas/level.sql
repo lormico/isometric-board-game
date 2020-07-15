@@ -17,7 +17,9 @@ CREATE TABLE IF NOT EXISTS "characters" (
 	"id"	INTEGER NOT NULL,
 	"name"	TEXT NOT NULL UNIQUE,
 	"tile"	TEXT NOT NULL UNIQUE,
-	PRIMARY KEY("id")
+	"start_tile_id"	INTEGER NOT NULL UNIQUE,
+	PRIMARY KEY("id"),
+	FOREIGN KEY("start_tile_id") REFERENCES "board_tiles"("tile_id")
 );
 CREATE TABLE IF NOT EXISTS "weapons" (
 	"id"	INTEGER NOT NULL,

@@ -9,12 +9,12 @@ public class TilePack
     private readonly IDictionary<string, Tile> playerTiles;
     private readonly IDictionary<string, Tile> overlayTiles;
 
-    public TilePack(string name)
+    public TilePack(string folder)
     {
         boardRooms = new Dictionary<string, Room>();
         playerTiles = new Dictionary<string, Tile>();
         overlayTiles = new Dictionary<string, Tile>();
-        string packPath = string.Join(Path.DirectorySeparatorChar.ToString(), Application.dataPath, "Resources", "Packs", name);
+        string packPath = string.Join(Path.DirectorySeparatorChar.ToString(), Application.dataPath, "Resources", "Packs", folder);
         string tilesPath = packPath + Path.DirectorySeparatorChar + "Tiles";
         string boardPath = tilesPath + Path.DirectorySeparatorChar + "Board";
         string playersPath = tilesPath + Path.DirectorySeparatorChar + "Players";

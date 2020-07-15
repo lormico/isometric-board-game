@@ -5,6 +5,7 @@ public class Board : MonoBehaviour
 {
     public Tilemap boardTilemap;
     public TileProvider tileProvider;
+    public Level level;
 
     // Start is called before the first frame update
     void Start()
@@ -14,12 +15,11 @@ public class Board : MonoBehaviour
 
     private void LoadBoard()
     {
-        Level levelData = Level.FromFile(Application.dataPath + "/Levels/Example.db");
-        foreach (Level.Tile tile in levelData.Tiles.Values)
+        foreach (Level.Tile tile in level.Tiles.Values)
         {
             boardTilemap.SetTile(
                 new Vector3Int(tile.x, tile.y, 0),
-                tileProvider.GetBoardTile(levelData.Pack, tile.RoomName, tile.TileName)
+                tileProvider.GetBoardTile(level.Pack, tile.RoomName, tile.TileName)
             );
         }
     }

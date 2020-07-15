@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -8,7 +7,8 @@ public class PlayerManager : MonoBehaviour
     public Tilemap overlayTilemap;
     public Tilemap playerTilemap;
     public TileProvider tileProvider;
-    public TextAsset playersConfig;
+    public Settings settings;
+    public Level level;
 
     private List<Player> players;
     private Player currentPlayer;
@@ -86,13 +86,13 @@ public class PlayerManager : MonoBehaviour
     private void LoadPlayers()
     {
         players = new List<Player>();
-        PlayerJsonData[] playerJsons = JsonHelper.FromJson<PlayerJsonData>(playersConfig.text);
-        foreach (PlayerJsonData playerJsonData in playerJsons)
+        foreach (Settings.Player playerSetting in settings.Players)
         {
+            Level.Character character = level.Characters[playerSetting.CharacterId];
             players.Add(new Player(
                 playerTilemap,
-                tileProvider.GetPlayerTile("Vanilla", playerJsonData.tile),
-                playerJsonData.startPosition));
+                tileProvider.GetPlayerTile(level.Pack, character.Tile),
+                level.GetCellFromId(character.StartTileId)));
         }
     }
 
@@ -104,13 +104,6 @@ public class PlayerManager : MonoBehaviour
     public bool CanMoveTo(Vector3Int cell)
     {
         return playerTilemap.GetTile(cell) == null;
-    }
-
-    [Serializable]
-    public class PlayerJsonData
-    {
-        public Vector3Int startPosition;
-        public string tile;
     }
 
 }

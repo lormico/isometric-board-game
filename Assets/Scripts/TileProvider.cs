@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class TileProvider : MonoBehaviour
 {
-    public TextAsset packsConfig;
+    public Settings settings;
     private IDictionary<string, TilePack> packs;
 
     private void Awake()
@@ -20,12 +19,11 @@ public class TileProvider : MonoBehaviour
     private void LoadPacks()
     {
         packs = new Dictionary<string, TilePack>();
-        PackData[] packDataArray = JsonHelper.FromJson<PackData>(packsConfig.text);
-        foreach (PackData packData in packDataArray)
+        foreach (Settings.Pack packSetting in settings.Packs)
         {
             packs.Add(
-                packData.folderName,
-                new TilePack(packData.folderName));
+                packSetting.Name,
+                new TilePack(packSetting.Folder));
         }
     }
 
@@ -56,10 +54,4 @@ public class TileProvider : MonoBehaviour
         return null;
     }
 
-    [Serializable]
-    private class PackData
-    {
-        public string id;
-        public string folderName;
-    }
 }

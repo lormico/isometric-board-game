@@ -7,46 +7,6 @@
 				"z": 0
 			},
 			"tile": "Vanilla/green"
-		},
-		{
-			"startPosition": {
-				"x": 1,
-				"y": 0,
-				"z": 0
-			},
-			"tile": "Vanilla/mustard"
-		},
-		{
-			"startPosition": {
-				"x": 2,
-				"y": 0,
-				"z": 0
-			},
-			"tile": "Vanilla/peacock"
-		},
-		{
-			"startPosition": {
-				"x": 3,
-				"y": 0,
-				"z": 0
-			},
-			"tile": "Vanilla/plum"
-		},
-		{
-			"startPosition": {
-				"x": 4,
-				"y": 0,
-				"z": 0
-			},
-			"tile": "Vanilla/scarlett"
-		},
-		{
-			"startPosition": {
-				"x": 5,
-				"y": 0,
-				"z": 0
-			},
-			"tile": "Vanilla/white"
 		}
 	]
 }

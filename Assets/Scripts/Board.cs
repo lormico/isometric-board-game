@@ -16,13 +16,18 @@ public class Board : MonoBehaviour
 
     private void LoadBoard()
     {
-        foreach(string row in level.text.Split('\n'))
+        Level levelData = Level.FromFile(Application.dataPath + "/Levels/Example.db");
+        foreach (Level.Tile tile in levelData.Tiles)
         {
-            string[] values = row.Split(',');
             boardTilemap.SetTile(
-                new Vector3Int(int.Parse(values[0]), int.Parse(values[1]), 0),
-                tileProvider.Get(values[2])
-                );
+                new Vector3Int(tile.x, tile.y, 0),
+                tileProvider.Get(levelData.Pack, tile.RoomName, tile.TileName)
+            );
         }
+    }
+
+    public class Room
+    {
+
     }
 }

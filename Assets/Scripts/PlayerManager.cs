@@ -73,7 +73,7 @@ public class PlayerManager : MonoBehaviour
         }
         foreach (Vector3Int cell in currentPlayer.ReachableCells)
         {
-            overlayTilemap.SetTile(cell, tileProvider.Get("reachable"));
+            overlayTilemap.SetTile(cell, tileProvider.Get("Vanilla", "overlay", "reachable"));
         }
     }
 

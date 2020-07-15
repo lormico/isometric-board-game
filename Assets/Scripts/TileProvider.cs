@@ -5,43 +5,43 @@ using UnityEngine.Tilemaps;
 
 public class TileProvider : MonoBehaviour
 {
-    public TextAsset tilesConfig;
-    private Dictionary<string, Tile> tiles;
+    public TextAsset packsConfig;
+    private IDictionary<string, TilePack> packs;
 
     private void Awake()
     {
         // Is this necessary? How many times should I expect Awake to be called?
-        if (tiles == null)
+        if (packs == null || packs.Count == 0)
         {
-            LoadTiles();
+            LoadPacks();
         }
     }
 
-    private void LoadTiles()
+    private void LoadPacks()
     {
-        tiles = new Dictionary<string, Tile>();
-        TileJsonData[] tileJsons = JsonHelper.FromJson<TileJsonData>(tilesConfig.text);
-        foreach (TileJsonData tileJsonData in tileJsons)
+        packs = new Dictionary<string, TilePack>();
+        PackData[] packDataArray = JsonHelper.FromJson<PackData>(packsConfig.text);
+        foreach (PackData packData in packDataArray)
         {
-            tiles.Add(
-                tileJsonData.type,
-                (Tile)Resources.Load("Tiles/Board/" + tileJsonData.tile, typeof(Tile)));
+            packs.Add(
+                packData.folderName,
+                new TilePack(packData.folderName));
         }
     }
 
-    public Tile Get(string type)
+    public Tile Get(string pack, string room, string name)
     {
-        if (tiles.ContainsKey(type))
+        if (packs.ContainsKey(pack))
         {
-            return tiles[type];
+            return packs[pack].GetTile(room, name);
         }
         return null;
     }
 
     [Serializable]
-    private class TileJsonData
+    private class PackData
     {
-        public string type;
-        public string tile;
+        public string id;
+        public string folderName;
     }
 }

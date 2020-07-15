@@ -5,46 +5,75 @@ using UnityEngine.Tilemaps;
 
 public class TilePack
 {
-    private readonly IDictionary<string, Type> tileTypes;
+    private readonly IDictionary<string, Room> boardRooms;
+    private readonly IDictionary<string, Tile> playerTiles;
+    private readonly IDictionary<string, Tile> overlayTiles;
 
     public TilePack(string name)
     {
-        tileTypes = new Dictionary<string, Type>();
+        boardRooms = new Dictionary<string, Room>();
+        playerTiles = new Dictionary<string, Tile>();
+        overlayTiles = new Dictionary<string, Tile>();
         string packPath = string.Join(Path.DirectorySeparatorChar.ToString(), Application.dataPath, "Resources", "Packs", name);
         string tilesPath = packPath + Path.DirectorySeparatorChar + "Tiles";
         string boardPath = tilesPath + Path.DirectorySeparatorChar + "Board";
         string playersPath = tilesPath + Path.DirectorySeparatorChar + "Players";
+        string overlayPath = tilesPath + Path.DirectorySeparatorChar + "Overlay";
+
         foreach (string dirPath in Directory.GetDirectories(boardPath))
         {
-            Type type = new Type(Directory.GetFiles(dirPath));
-            tileTypes.Add(Path.GetFileName(dirPath), type);
+            Room room = new Room(Directory.GetFiles(dirPath));
+            boardRooms.Add(Path.GetFileName(dirPath), room);
+        }
+
+        foreach (string path in Directory.GetFiles(playersPath))
+        {
+            playerTiles.Add(Path.GetFileNameWithoutExtension(path), Resources.Load<Tile>(GetResourcePath(path)));
+        }
+
+        foreach (string path in Directory.GetFiles(overlayPath))
+        {
+            overlayTiles.Add(Path.GetFileNameWithoutExtension(path), Resources.Load<Tile>(GetResourcePath(path)));
         }
     }
 
-    public Tile GetTile(string type, string name)
+    public Tile GetBoardTile(string room, string name)
     {
-        if (tileTypes.ContainsKey(type))
+        if (boardRooms.ContainsKey(room))
         {
-            return tileTypes[type].GetTile(name);
+            return boardRooms[room].GetTile(name);
         }
         return null;
     }
 
-    private class Type
+    public Tile GetPlayerTile(string name)
+    {
+        if (playerTiles.ContainsKey(name))
+        {
+            return playerTiles[name];
+        }
+        return null;
+    }
+
+    public Tile GetOverlayTile(string name)
+    {
+        if (overlayTiles.ContainsKey(name))
+        {
+            return overlayTiles[name];
+        }
+        return null;
+    }
+
+    private class Room
     {
         private readonly IDictionary<string, Tile> tiles;
 
-        public Type(IList<string> paths)
+        public Room(IList<string> paths)
         {
             tiles = new Dictionary<string, Tile>();
             foreach (string path in paths)
             {
-                string tileName = Path.GetFileNameWithoutExtension(path);
-                string resourcePath = (new FileInfo(path).Directory.FullName + Path.DirectorySeparatorChar + tileName)
-                    .Remove(0, (Application.dataPath + Path.DirectorySeparatorChar + "Resources" + Path.DirectorySeparatorChar).Length)
-                    .Replace('\\', '/');
-
-                tiles.Add(tileName, Resources.Load<Tile>(resourcePath));
+                tiles.Add(Path.GetFileNameWithoutExtension(path), Resources.Load<Tile>(GetResourcePath(path)));
             }
         }
 
@@ -56,5 +85,13 @@ public class TilePack
             }
             return null;
         }
+    }
+
+    private static string GetResourcePath(string absolutePath)
+    {
+        string tileName = Path.GetFileNameWithoutExtension(absolutePath);
+        return (new FileInfo(absolutePath).Directory.FullName + Path.DirectorySeparatorChar + tileName)
+            .Remove(0, (Application.dataPath + Path.DirectorySeparatorChar + "Resources" + Path.DirectorySeparatorChar).Length)
+            .Replace('\\', '/');
     }
 }

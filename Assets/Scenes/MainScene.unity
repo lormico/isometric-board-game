@@ -818,8 +818,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrambleButton: {fileID: 736523021}
   diceResult: {fileID: 53044607}
-  boardTilemap: {fileID: 2146356706}
-  overlayTilemap: {fileID: 102407359}
   playerManager: {fileID: 630101166}
 --- !u!1 &1061236585
 GameObject:
@@ -964,7 +962,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4effb6600c595cb46ba09b29aa5e922a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilesConfig: {fileID: 4900000, guid: 8c1f478c05b602943806d86af69fbb7e, type: 3}
+  packsConfig: {fileID: 4900000, guid: 0b379d672c0b69d4f8da5c696efe4369, type: 3}
 --- !u!1 &1823871735
 GameObject:
   m_ObjectHideFlags: 0

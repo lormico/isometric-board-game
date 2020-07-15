@@ -7,9 +7,11 @@ public class Level
     public string Name { get; private set; }
     public string Pack { get; private set; }
     public IList<Room> Rooms { get; private set; }
-    public IList<Tile> Tiles { get; private set; }
+    public IDictionary<int, Tile> Tiles { get; private set; }
+    public IList<Connection> Obstacles { get; private set; }
     public IList<Character> Characters { get; private set; }
     public IList<Weapon> Weapons { get; private set; }
+    public IList<Connection> Shortcuts { get; private set; }
 
     public static Level FromFile(string filePath)
     {
@@ -23,10 +25,12 @@ public class Level
         instance.Pack = levelMetadata["pack"];
         instance.Name = levelMetadata["level_name"];
 
-        instance.Rooms = GetLevelRooms(dbcon);
-        instance.Tiles = GetLevelTiles(dbcon);
-        instance.Characters = GetLevelCharacters(dbcon);
-        instance.Weapons = GetLevelWeapons(dbcon);
+        instance.Rooms = GetRooms(dbcon);
+        instance.Tiles = GetTiles(dbcon);
+        instance.Obstacles = GetObstacles(dbcon);
+        instance.Characters = GetCharacters(dbcon);
+        instance.Weapons = GetWeapons(dbcon);
+        instance.Shortcuts = GetShortcuts(dbcon);
 
         dbcon.Close();
 
@@ -48,56 +52,34 @@ public class Level
         return levelMetadata;
     }
 
-    private static IList<Room> GetLevelRooms(IDbConnection dbcon)
+    private static IList<Room> GetRooms(IDbConnection dbcon)
     {
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
-        cmnd_read.CommandText = "SELECT name, door_x, door_y, door_opening FROM rooms";
+        cmnd_read.CommandText = "SELECT name FROM rooms";
         reader = cmnd_read.ExecuteReader();
-        IDictionary<string, IList<Door>> doorDict = new Dictionary<string, IList<Door>>();
+        IList<Room> rooms = new List<Room>();
         while (reader.Read())
         {
-            string name = reader.GetString(reader.GetOrdinal("name"));
-            if (!doorDict.ContainsKey(name))
-            {
-                doorDict[name] = new List<Door>();
-            }
+            rooms.Add(new Room(reader.GetString(reader.GetOrdinal("name"))));
 
-            Door door = null;
-            if (!reader.IsDBNull(reader.GetOrdinal("door_x")) &&
-                !reader.IsDBNull(reader.GetOrdinal("door_y")) &&
-                !reader.IsDBNull(reader.GetOrdinal("door_opening")))
-            {
-                door = new Door(
-                    reader.GetInt32(reader.GetOrdinal("door_x")),
-                    reader.GetInt32(reader.GetOrdinal("door_y")),
-                    reader.GetInt32(reader.GetOrdinal("door_opening")));
-            }
-            if (door != null)
-            {
-                doorDict[name].Add(door);
-            }
-        }
-
-        IList<Room> rooms = new List<Room>();
-        foreach (KeyValuePair<string, IList<Door>> item in doorDict)
-        {
-            rooms.Add(new Room(item.Key, item.Value));
         }
 
         return rooms;
     }
 
-    private static IList<Tile> GetLevelTiles(IDbConnection dbcon)
+    private static IDictionary<int, Tile> GetTiles(IDbConnection dbcon)
     {
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
-        cmnd_read.CommandText = "SELECT x, y, room, tile FROM board_tiles";
+        cmnd_read.CommandText = "SELECT tile_id, x, y, room, tile FROM board_tiles";
         reader = cmnd_read.ExecuteReader();
-        IList<Tile> tiles = new List<Tile>();
+        IDictionary<int, Tile> tiles = new Dictionary<int, Tile>();
         while (reader.Read())
         {
-            tiles.Add(new Tile(
+            int tile_id = reader.GetInt32(reader.GetOrdinal("tile_id"));
+            tiles.Add(tile_id, new Tile(
+                tile_id,
                 reader.GetInt32(reader.GetOrdinal("x")),
                 reader.GetInt32(reader.GetOrdinal("y")),
                 reader.GetString(reader.GetOrdinal("room")),
@@ -108,45 +90,76 @@ public class Level
         return tiles;
     }
 
-    private static IList<Character> GetLevelCharacters(IDbConnection dbcon)
+    private static IList<Connection> GetObstacles(IDbConnection dbcon)
+    {
+        IDbCommand cmnd_read = dbcon.CreateCommand();
+        IDataReader reader;
+        cmnd_read.CommandText = "SELECT tile_id1, tile_id2 FROM obstacles";
+        reader = cmnd_read.ExecuteReader();
+        IList<Connection> obstacles = new List<Connection>();
+        while (reader.Read())
+        {
+            obstacles.Add(new Connection(
+                reader.GetInt32(reader.GetOrdinal("tile_id1")),
+                reader.GetInt32(reader.GetOrdinal("tile_id2"))
+            ));
+        }
+
+        return obstacles;
+    }
+
+    private static IList<Character> GetCharacters(IDbConnection dbcon)
     {
         IList<Character> characters = new List<Character>();
 
         return characters;
     }
 
-    private static IList<Weapon> GetLevelWeapons(IDbConnection dbcon)
+    private static IList<Weapon> GetWeapons(IDbConnection dbcon)
     {
         IList<Weapon> weapons = new List<Weapon>();
 
         return weapons;
     }
 
+    private static IList<Connection> GetShortcuts(IDbConnection dbcon)
+    {
+        IDbCommand cmnd_read = dbcon.CreateCommand();
+        IDataReader reader;
+        cmnd_read.CommandText = "SELECT room1, room2 FROM shortcuts";
+        reader = cmnd_read.ExecuteReader();
+        IList<Connection> shortcuts = new List<Connection>();
+        while (reader.Read())
+        {
+            shortcuts.Add(new Connection(
+                reader.GetInt32(reader.GetOrdinal("room1")),
+                reader.GetInt32(reader.GetOrdinal("room2"))
+            ));
+        }
+
+        return shortcuts;
+    }
+
     public class Room
     {
         public string Name { get; private set; }
-        public IList<Door> Doors { get; private set; }
 
-        public Room(string name, IList<Door> doors)
+        public Room(string name)
         {
             Name = name;
-            Doors = doors;
         }
     }
 
-    public class Door
+    public class Connection
     {
-        public int x { get; private set; }
-        public int y { get; private set; }
-        public int Opening { get; private set; }
+        public int Origin { get; private set; }
+        public int Destination { get; private set; }
 
-        public Door(int x, int y, int opening)
+        public Connection(int origin, int destination)
         {
-            this.x = x;
-            this.y = y;
-            this.Opening = opening;
+            Origin = origin;
+            Destination = destination;
         }
-
     }
 
     public class Character
@@ -164,13 +177,15 @@ public class Level
 
     public class Tile
     {
+        public int Id { get; private set; }
         public int x { get; private set; }
         public int y { get; private set; }
         public string RoomName { get; private set; }
         public string TileName { get; private set; }
 
-        public Tile(int x, int y, string roomName, string tileName)
+        public Tile(int id, int x, int y, string roomName, string tileName)
         {
+            Id = id;
             this.x = x;
             this.y = y;
             RoomName = roomName;

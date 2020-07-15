@@ -29,11 +29,29 @@ public class TileProvider : MonoBehaviour
         }
     }
 
-    public Tile Get(string pack, string room, string name)
+    public Tile GetBoardTile(string pack, string room, string name)
     {
         if (packs.ContainsKey(pack))
         {
-            return packs[pack].GetTile(room, name);
+            return packs[pack].GetBoardTile(room, name);
+        }
+        return null;
+    }
+
+    public Tile GetPlayerTile(string pack, string name)
+    {
+        if (packs.ContainsKey(pack))
+        {
+            return packs[pack].GetPlayerTile(name);
+        }
+        return null;
+    }
+
+    public Tile GetOverlayTile(string pack, string name)
+    {
+        if (packs.ContainsKey(pack))
+        {
+            return packs[pack].GetOverlayTile(name);
         }
         return null;
     }

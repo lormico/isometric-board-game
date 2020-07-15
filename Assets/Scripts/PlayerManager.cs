@@ -73,7 +73,7 @@ public class PlayerManager : MonoBehaviour
         }
         foreach (Vector3Int cell in currentPlayer.ReachableCells)
         {
-            overlayTilemap.SetTile(cell, tileProvider.Get("Vanilla", "overlay", "reachable"));
+            overlayTilemap.SetTile(cell, tileProvider.GetOverlayTile("Vanilla", "reachable"));
         }
     }
 
@@ -91,7 +91,7 @@ public class PlayerManager : MonoBehaviour
         {
             players.Add(new Player(
                 playerTilemap,
-                (Tile)Resources.Load("Tiles/Players/" + playerJsonData.tile, typeof(Tile)),
+                tileProvider.GetPlayerTile("Vanilla", playerJsonData.tile),
                 playerJsonData.startPosition));
         }
     }

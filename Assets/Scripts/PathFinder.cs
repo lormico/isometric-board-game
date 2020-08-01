@@ -4,31 +4,31 @@ using UnityEngine.Tilemaps;
 
 public class PathFinder : MonoBehaviour
 {
-    public Level level;
+    public Level Level;
 
-    public List<Vector3Int> GetReachableCells(Vector3Int center, int distance)
+    public List<Vector3Int> GetReachableCells(Vector3Int center, int maxDistance)
     {
         Stack<Vector3Int> frontier = new Stack<Vector3Int>();
         HashSet<Vector3Int> reachableCells = new HashSet<Vector3Int>();
-        Dictionary<Vector3Int, int> costSoFar = new Dictionary<Vector3Int, int>();
+        Dictionary<Vector3Int, int> distanceSoFar = new Dictionary<Vector3Int, int>();
 
         frontier.Push(center);
         reachableCells.Add(center);
-        costSoFar[center] = 0;
+        distanceSoFar[center] = 0;
 
         while (frontier.Count > 0)
         {
             Vector3Int current = frontier.Pop();
             foreach (Vector3Int next in GetNeighboringWalkableCells(current))
             {
-                int newCost = costSoFar[current] + 1;
-                if (newCost > distance)
+                int newDistance = distanceSoFar[current] + 1;
+                if (newDistance > maxDistance)
                 {
                     continue;
                 }
-                if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
+                if (!distanceSoFar.ContainsKey(next) || newDistance < distanceSoFar[next])
                 {
-                    costSoFar[next] = newCost;
+                    distanceSoFar[next] = newDistance;
                     frontier.Push(next);
                     reachableCells.Add(next);
                 }

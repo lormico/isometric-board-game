@@ -9,7 +9,7 @@ public class Level : MonoBehaviour
     public Settings settings;
     public string Name { get; private set; }
     public string Pack { get; private set; }
-    public IList<Room> Rooms { get; private set; }
+    public List<Room> Rooms { get; private set; }
     public IList<Tile> Tiles { get; private set; }
     public IList<Connection> Obstacles { get; private set; }
     public IList<Character> Characters { get; private set; }
@@ -56,28 +56,41 @@ public class Level : MonoBehaviour
         return levelMetadata;
     }
 
-    private static IList<Room> GetRooms(IDbConnection dbcon)
+    private static List<Room> GetRooms(IDbConnection dbcon)
     {
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
-        cmnd_read.CommandText = "SELECT name FROM rooms";
+        cmnd_read.CommandText = "SELECT name, type FROM rooms";
         reader = cmnd_read.ExecuteReader();
-        IList<Room> rooms = new List<Room>();
+        List<Room> rooms = new List<Room>();
         while (reader.Read())
         {
-            rooms.Add(new Room(reader.GetString(reader.GetOrdinal("name"))));
+            string roomName = reader.GetString(reader.GetOrdinal("name"));
+            RoomType roomType;
+            switch (reader.GetString(reader.GetOrdinal("type")))
+            {
+                case "hallway":
+                    roomType = RoomType.Hallway; break;
+                case "entrypoint":
+                    roomType = RoomType.Entrypoint; break;
+                default:
+                    roomType = RoomType.Room; break;
+            };
+            rooms.Add(new Room(
+                roomName,
+                roomType));
         }
 
         return rooms;
     }
 
-    private static IList<Tile> GetTiles(IDbConnection dbcon)
+    private static List<Tile> GetTiles(IDbConnection dbcon)
     {
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
         cmnd_read.CommandText = "SELECT tile_id, x, y, room, tile FROM board_tiles";
         reader = cmnd_read.ExecuteReader();
-        IList<Tile> tiles = new List<Tile>();
+        List<Tile> tiles = new List<Tile>();
         while (reader.Read())
         {
             tiles.Add(new Tile(
@@ -177,11 +190,17 @@ public class Level : MonoBehaviour
 
     public Tile GetTile(Vector2Int position)
     {
-        if (!TilePositionIndex.ContainsKey(position)) {
+        if (!TilePositionIndex.ContainsKey(position))
+        {
             return null;
         }
         return Tiles[TilePositionIndex[position]];
 
+    }
+
+    public Room GetRoom(string name)
+    {
+        return Rooms.Find(room => room.Name == name);
     }
 
     public bool HasObstacle(Vector2Int origin, Vector2Int destination)
@@ -195,13 +214,22 @@ public class Level : MonoBehaviour
         return false;
     }
 
+    public enum RoomType
+    {
+        Hallway,
+        Entrypoint,
+        Room
+    }
+
     public class Room
     {
         public string Name { get; private set; }
+        public RoomType Type { get; private set; }
 
-        public Room(string name)
+        public Room(string name, RoomType type)
         {
             Name = name;
+            Type = type;
         }
     }
 

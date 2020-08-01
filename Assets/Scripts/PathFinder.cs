@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class PathFinder : MonoBehaviour
 {
@@ -8,39 +8,58 @@ public class PathFinder : MonoBehaviour
 
     public List<Vector3Int> GetReachableCells(Vector3Int center, int maxDistance)
     {
-        Stack<Vector3Int> frontier = new Stack<Vector3Int>();
-        HashSet<Vector3Int> reachableCells = new HashSet<Vector3Int>();
-        Dictionary<Vector3Int, int> distanceSoFar = new Dictionary<Vector3Int, int>();
+        Stack<Level.Tile> frontier = new Stack<Level.Tile>();
+        HashSet<Level.Tile> reachableTiles = new HashSet<Level.Tile>();
+        Dictionary<Level.Tile, int> distanceSoFar = new Dictionary<Level.Tile, int>();
 
-        frontier.Push(center);
-        reachableCells.Add(center);
-        distanceSoFar[center] = 0;
+        Level.Tile centerTile = Level.GetTile((Vector2Int)center);
+        Level.Room centerRoom = Level.GetRoom(centerTile.RoomName);
+        frontier.Push(centerTile);
+        reachableTiles.Add(centerTile);
+        distanceSoFar[centerTile] = 0;
 
         while (frontier.Count > 0)
         {
-            Vector3Int current = frontier.Pop();
-            foreach (Vector3Int next in GetNeighboringWalkableCells(current))
+            Level.Tile currentTile = frontier.Pop();
+            Level.Room currentRoom = Level.GetRoom(currentTile.RoomName);
+            foreach (Level.Tile nextTile in GetNeighboringWalkableTiles(currentTile))
             {
-                int newDistance = distanceSoFar[current] + 1;
+                int newDistance = distanceSoFar[currentTile] + 1;
                 if (newDistance > maxDistance)
                 {
                     continue;
                 }
-                if (!distanceSoFar.ContainsKey(next) || newDistance < distanceSoFar[next])
+
+                Level.Room nextRoom = Level.GetRoom(nextTile.RoomName);
+                if (currentRoom != centerRoom && nextRoom != currentRoom)
                 {
-                    distanceSoFar[next] = newDistance;
-                    frontier.Push(next);
-                    reachableCells.Add(next);
+                    /* Next would be a different room but we're pathing from another room
+                     * than the starting one: denied (can't pass through multiple rooms)
+                     */
+                    continue;
+                }
+
+                if (!distanceSoFar.ContainsKey(nextTile) || newDistance < distanceSoFar[nextTile])
+                {
+                    distanceSoFar[nextTile] = newDistance;
+                    frontier.Push(nextTile);
+                    reachableTiles.Add(nextTile);
                 }
             }
         }
 
-        return new List<Vector3Int>(reachableCells);
+        return reachableTiles.Select(tile => (Vector3Int)tile.Position).ToList();
     }
 
-    private IList<Vector3Int> GetNeighboringWalkableCells(Vector3Int center)
+    /// <summary>
+    /// Gets the 4 strictly adjacent tiles around a specified "center" tile, and checks if each
+    /// is walkable and if the movement from the center tile to it is allowed.
+    /// </summary>
+    /// <param name="center">The position around which the walkable tiles are retrieved</param>
+    /// <returns>The list of adjacent walkable board tiles</returns>
+    private IList<Level.Tile> GetNeighboringWalkableTiles(Level.Tile centerTile)
     {
-        IList<Vector3Int> neighboringCells = new List<Vector3Int>();
+        IList<Level.Tile> neighboringTiles = new List<Level.Tile>();
         IList<Vector2Int> movements = new List<Vector2Int>() {
             new Vector2Int(-1, 0),
             new Vector2Int(1, 0),
@@ -50,23 +69,24 @@ public class PathFinder : MonoBehaviour
 
         foreach (Vector2Int movement in movements)
         {
-            Vector3Int neighboringCell = new Vector3Int(center.x + movement.x, center.y + movement.y, 0);
-            if (IsCellWalkable(neighboringCell) && IsPathAllowed(center, neighboringCell))
+            Level.Tile neighboringTile = Level.GetTile(new Vector2Int(centerTile.Position.x + movement.x, centerTile.Position.y + movement.y));
+            if (IsTileWalkable(neighboringTile) && IsMovementAllowed(centerTile, neighboringTile))
             {
-                neighboringCells.Add(neighboringCell);
+                neighboringTiles.Add(neighboringTile);
             }
         }
 
-        return neighboringCells;
+        return neighboringTiles;
     }
 
-    private bool IsCellWalkable(Vector3Int cell)
+    private bool IsTileWalkable(Level.Tile cell)
     {
-        return level.GetTile((Vector2Int)cell) != null;
+        return cell != null;
     }
 
-    private bool IsPathAllowed(Vector3Int origin, Vector3Int destination)
+    private bool IsMovementAllowed(Level.Tile originTile, Level.Tile destinationTile)
     {
-        return !level.HasObstacle((Vector2Int)origin, (Vector2Int)destination);
+        // Check if the path is impeded by an obstacle
+        return !Level.HasObstacle(originTile.Position, destinationTile.Position);
     }
 }

@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS "weapons" (
 );
 CREATE TABLE IF NOT EXISTS "rooms" (
 	"name"	TEXT NOT NULL,
+	"type"	TEXT NOT NULL,
 	PRIMARY KEY("name")
 );
 CREATE TABLE IF NOT EXISTS "shortcuts" (
@@ -46,6 +47,6 @@ CREATE TABLE IF NOT EXISTS "obstacles" (
 );
 INSERT INTO "meta" VALUES ('pack',NULL);
 INSERT INTO "meta" VALUES ('level_name',NULL);
-INSERT INTO "rooms" VALUES ('hallway');
-INSERT INTO "rooms" VALUES ('entrypoint');
+INSERT INTO "rooms" VALUES ('hallway','hallway');
+INSERT INTO "rooms" VALUES ('entrypoint','entrypoint');
 COMMIT;

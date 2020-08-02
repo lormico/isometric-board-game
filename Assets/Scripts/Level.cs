@@ -14,7 +14,6 @@ public class Level : MonoBehaviour
     public IList<Connection> Obstacles { get; private set; }
     public IList<Character> Characters { get; private set; }
     public IList<Weapon> Weapons { get; private set; }
-    public IList<Connection> Shortcuts { get; private set; }
 
     private IDictionary<int, int> TileIdIndex;
     private IDictionary<Vector2Int, int> TilePositionIndex;
@@ -34,7 +33,6 @@ public class Level : MonoBehaviour
         Obstacles = GetObstacles(dbcon);
         Characters = GetCharacters(dbcon);
         Weapons = GetWeapons(dbcon);
-        Shortcuts = GetShortcuts(dbcon);
 
         dbcon.Close();
 
@@ -58,16 +56,33 @@ public class Level : MonoBehaviour
 
     private static List<Room> GetRooms(IDbConnection dbcon)
     {
-        IDbCommand cmnd_read = dbcon.CreateCommand();
-        IDataReader reader;
-        cmnd_read.CommandText = "SELECT name, type FROM rooms";
-        reader = cmnd_read.ExecuteReader();
+        IDbCommand cmnd_read_rooms = dbcon.CreateCommand();
+        IDataReader reader_rooms;
+        cmnd_read_rooms.CommandText = "SELECT name, type FROM rooms";
+        reader_rooms = cmnd_read_rooms.ExecuteReader();
         List<Room> rooms = new List<Room>();
-        while (reader.Read())
+        while (reader_rooms.Read())
         {
-            string roomName = reader.GetString(reader.GetOrdinal("name"));
+            string roomName = reader_rooms.GetString(reader_rooms.GetOrdinal("name"));
+
+            IDbCommand cmnd_read_shortcuts = dbcon.CreateCommand();
+            IDataReader reader_shortcuts;
+
+            IDbDataParameter room1Param = cmnd_read_shortcuts.CreateParameter();
+            room1Param.ParameterName = "@room1";
+            room1Param.Value = roomName;
+
+            cmnd_read_shortcuts.CommandText = "SELECT room2 FROM shortcuts WHERE room1 = @room1";
+            cmnd_read_shortcuts.Parameters.Add(room1Param);
+            reader_shortcuts = cmnd_read_shortcuts.ExecuteReader();
+            IList<string> shortcuts = new List<string>();
+            while (reader_shortcuts.Read())
+            {
+                shortcuts.Add(reader_shortcuts.GetString(reader_shortcuts.GetOrdinal("room2")));
+            }
+
             RoomType roomType;
-            switch (reader.GetString(reader.GetOrdinal("type")))
+            switch (reader_rooms.GetString(reader_rooms.GetOrdinal("type")))
             {
                 case "hallway":
                     roomType = RoomType.Hallway; break;
@@ -78,7 +93,8 @@ public class Level : MonoBehaviour
             };
             rooms.Add(new Room(
                 roomName,
-                roomType));
+                roomType,
+                shortcuts));
         }
 
         return rooms;
@@ -150,24 +166,6 @@ public class Level : MonoBehaviour
         return weapons;
     }
 
-    private static IList<Connection> GetShortcuts(IDbConnection dbcon)
-    {
-        IDbCommand cmnd_read = dbcon.CreateCommand();
-        IDataReader reader;
-        cmnd_read.CommandText = "SELECT room1, room2 FROM shortcuts";
-        reader = cmnd_read.ExecuteReader();
-        IList<Connection> shortcuts = new List<Connection>();
-        while (reader.Read())
-        {
-            shortcuts.Add(new Connection(
-                reader.GetInt32(reader.GetOrdinal("room1")),
-                reader.GetInt32(reader.GetOrdinal("room2"))
-            ));
-        }
-
-        return shortcuts;
-    }
-
     private void CreateTileIndices()
     {
         TileIdIndex = new Dictionary<int, int>();
@@ -225,11 +223,13 @@ public class Level : MonoBehaviour
     {
         public string Name { get; private set; }
         public RoomType Type { get; private set; }
+        public IList<string> Shortcuts { get; private set; }
 
-        public Room(string name, RoomType type)
+        public Room(string name, RoomType type, IList<string> shortcuts)
         {
             Name = name;
             Type = type;
+            Shortcuts = shortcuts;
         }
     }
 

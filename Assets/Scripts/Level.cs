@@ -9,6 +9,7 @@ public class Level : MonoBehaviour
     public Settings settings;
     public string Name { get; private set; }
     public string Pack { get; private set; }
+    public bool AccuseAnywhere { get; private set; }
     public List<Room> Rooms { get; private set; }
     public IList<Tile> Tiles { get; private set; }
     public IList<Connection> Obstacles { get; private set; }
@@ -27,6 +28,7 @@ public class Level : MonoBehaviour
         IDictionary<string, string> levelMetadata = GetLevelMetadata(dbcon);
         Pack = levelMetadata["pack"];
         Name = levelMetadata["level_name"];
+        AccuseAnywhere = levelMetadata["accuse_anywhere"] == "true";
 
         Rooms = GetRooms(dbcon);
         Tiles = GetTiles(dbcon);
@@ -86,8 +88,8 @@ public class Level : MonoBehaviour
             {
                 case "hallway":
                     roomType = RoomType.Hallway; break;
-                case "entrypoint":
-                    roomType = RoomType.Entrypoint; break;
+                case "accusation_room":
+                    roomType = RoomType.AccusationRoom; break;
                 default:
                     roomType = RoomType.Room; break;
             };
@@ -215,7 +217,7 @@ public class Level : MonoBehaviour
     public enum RoomType
     {
         Hallway,
-        Entrypoint,
+        AccusationRoom,
         Room
     }
 

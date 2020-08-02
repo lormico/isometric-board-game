@@ -4,6 +4,10 @@
 		{
 			"id": 0,
 			"characterId": 0
+		},
+		{
+			"id": 1,
+			"characterId": 1
 		}
 	],
 	"Packs": [

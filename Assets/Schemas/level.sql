@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS "obstacles" (
 );
 INSERT INTO "meta" VALUES ('pack',NULL);
 INSERT INTO "meta" VALUES ('level_name',NULL);
+INSERT INTO "meta" VALUES ('accuse_anywhere',NULL); -- should be 'false' or 'true'
 INSERT INTO "rooms" VALUES ('hallway','hallway');
-INSERT INTO "rooms" VALUES ('entrypoint','entrypoint');
+INSERT INTO "rooms" VALUES ('accusation_room','accusation_room');
 COMMIT;
